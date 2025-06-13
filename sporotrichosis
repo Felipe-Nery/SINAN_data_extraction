@@ -1,0 +1,24 @@
+# FTP URL
+ftp_url <- "ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/DADOS/FINAIS/"
+
+ftp_url <- "ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/DADOS/PRELIM/"
+
+# Filter the sporotrichosis cases
+arquivos_para_baixar <- ftp_files[grep("^ESPOBR.*\\.dbc$", ftp_files)]
+
+# Creating the downloads directory to save the files
+dir.create("bases_esporotricose", showWarnings = FALSE)
+
+# Loop for download the filtered files
+for (file in arquivos_para_baixar) {
+  file_url <- paste0(ftp_url, file)  # Completed URL
+  dest_file <- file.path("bases_esporotricose", file)  # local pathway to save
+  
+  # trying the download
+  tryCatch({
+    curl_download(file_url, dest_file)
+    print(paste("Baixado com sucesso:", file))
+  }, error = function(e) {
+    print(paste("Erro ao baixar:", file, "->", e$message))
+  })
+}
